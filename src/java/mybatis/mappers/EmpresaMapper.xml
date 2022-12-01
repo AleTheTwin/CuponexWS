@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="empresa">
+
+    <select id="readAll" resultType="pojo.Empresa">
+        SELECT
+            *
+        FROM
+            Empresa
+        WHERE estatus = true
+    </select>
+
+    <select id="readById" parameterType="int" resultType="pojo.Empresa">
+        SELECT
+            *
+        FROM
+            Empresa
+        WHERE id = #{id}
+    </select>
+
+    <select id="readByCorreo" parameterType="String" resultType="pojo.Empresa">
+        SELECT
+            *
+        FROM
+            Empresa
+        WHERE correo = #{correo}
+    </select>
+
+    <insert id="create" parameterType="pojo.Empresa">
+        INSERT INTO
+        Empresa (
+            nombre,
+            nombreComercial,
+            correo,
+            direccion,
+            codigoPostal,
+            ciudad,
+            telefono,
+            paginaWeb,
+            rfc,
+            representanteLegalId
+        )
+        VALUES
+        (
+            #{nombre},
+            #{nombreComercial},
+            #{correo},
+            #{direccion},
+            #{codigoPostal},
+            #{ciudad},
+            #{telefono},
+            #{paginaWeb},
+            #{rfc},
+            #{representanteLegalId}
+        )
+    </insert>
+
+    <update id="update" parameterType="pojo.Empresa">
+        UPDATE Empresa SET 
+            nombre = #{nombre},
+            nombreComercial = #{nombreComercial}, 
+            correo = #{correo}, 
+            direccion = #{direccion}, 
+            codigoPostal = #{codigoPostal}, 
+            ciudad = #{ciudad}, 
+            telefono = #{telefono}, 
+            paginaWeb = #{paginaWeb}, 
+            rfc = #{rfc}, 
+            representanteLegalId = #{representanteLegalId}
+        WHERE id = #{id}  AND estatus = true 
+    </update>
+
+    <update id="delete" parameterType="int">
+        UPDATE Empresa SET 
+            estatus = false
+        WHERE id = #{id}   
+    </update>
+
+</mapper>

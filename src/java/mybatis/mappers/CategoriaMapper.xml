@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="categoria">
+
+    <select id="readAll" resultType="pojo.Categoria">
+        SELECT
+            *
+        FROM
+            Categoria
+    </select>
+
+    <select id="readById" parameterType="int" resultType="pojo.Categoria">
+        SELECT
+            *
+        FROM
+            Categoria
+        WHERE id = #{id}
+    </select>
+
+    <select id="readByNombre" parameterType="String" resultType="pojo.Categoria">
+        SELECT
+            *
+        FROM
+            Categoria
+        WHERE nombre = #{nombre}
+    </select>
+
+    <insert id="create" parameterType="pojo.Categoria">
+        INSERT INTO
+        Categoria (
+            nombre
+        )
+        VALUES
+        (
+            #{nombre}
+        )
+    </insert>
+
+    <update id="update" parameterType="pojo.Categoria">
+        UPDATE Categoria SET 
+            nombre = #{nombre}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="delete" parameterType="int">
+        DELETE 
+        FROM Categoria
+        WHERE id = #{id}   
+    </delete>
+
+</mapper>

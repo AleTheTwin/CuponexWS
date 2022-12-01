@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="usuario">
+
+    <select id="readAll" resultType="pojo.Usuario">
+        SELECT
+            id, nombre, correo, apellidoPaterno, apellidoMaterno, telefono, direccion, fechaDeNacimiento
+        FROM
+            Usuario
+    </select>
+
+    <select id="readAllActive" resultType="pojo.Usuario">
+        SELECT
+            id, nombre, correo, apellidoPaterno, apellidoMaterno, telefono, direccion, fechaDeNacimiento
+        FROM
+            Usuario
+        WHERE estatus = true
+    </select>
+
+    <select id="readById" parameterType="int" resultType="pojo.Usuario">
+        SELECT
+            id, nombre, correo, apellidoPaterno, apellidoMaterno, telefono, direccion, fechaDeNacimiento
+        FROM
+            Usuario
+        WHERE id = #{id}
+    </select>
+
+    <select id="readByIdActive" parameterType="int" resultType="pojo.Usuario">
+        SELECT
+            id, nombre, correo, apellidoPaterno, apellidoMaterno, telefono, direccion, fechaDeNacimiento
+        FROM
+            Usuario
+        WHERE id = #{id} AND  estatus = true
+    </select>
+
+    <select id="loginAdmin" parameterType="String" resultType="pojo.Usuario">
+        SELECT
+            *
+        FROM
+            Usuario
+        WHERE correo = #{correo} AND estatus = true AND administracion = true
+    </select>
+
+    <select id="login" parameterType="String" resultType="pojo.Usuario">
+        SELECT
+            *
+        FROM
+            Usuario
+        WHERE correo = #{correo} AND estatus = true AND administracion = false
+    </select>
+
+    <select id="readByCorreo" parameterType="String" resultType="pojo.Usuario">
+        SELECT
+            *
+        FROM
+            Usuario
+        WHERE correo = #{correo}
+    </select>
+    
+    <insert id="create" parameterType="pojo.Usuario" >
+        INSERT INTO Usuario (nombre, correo, apellidoPaterno, apellidoMaterno, telefono, direccion, fechaDeNacimiento, password, administracion) VALUES (
+        #{nombre},
+        #{correo},
+        #{apellidoPaterno},
+        #{apellidoMaterno},
+        #{telefono},
+        #{direccion},
+        #{fechaDeNacimiento},
+        #{password},
+        #{administracion}
+        )
+    </insert>
+    
+    <update id="update" parameterType="pojo.Usuario" >
+        UPDATE Usuario SET 
+            nombre = #{nombre},
+            apellidoPaterno = #{apellidoPaterno}, 
+            apellidoMaterno = #{apellidoMaterno}, 
+            telefono = #{telefono} ,
+            direccion = #{direccion} ,
+            fechaDeNacimiento = #{fechaDeNacimiento}, 
+            password = #{password}, 
+            administracion = #{administracion} 
+        WHERE id = #{id}   
+    </update>
+    
+    <update id="delete" parameterType="int" >
+        UPDATE Usuario SET 
+            estatus = false
+        WHERE id = #{id}   
+    </update>
+
+</mapper>
