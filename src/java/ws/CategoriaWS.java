@@ -67,30 +67,20 @@ public class CategoriaWS {
     @Path("/{id}")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response<Categoria> getById(@PathParam("id") Integer id) {
-        Response<Categoria> response = new Response<>();
+    public Categoria getById(@PathParam("id") Integer id) {
         Categoria categoria = null;
         SqlSession conn = MyBatisUtil.getSession();
         if (conn != null) {
             try {
                 categoria = conn.selectOne("categoria.readById", id);
-                if(categoria == null) {
-                    response.setError(Boolean.TRUE);
-                    response.setMessage(Constants.SELECT_FAIL);
-                } else {
-                    response.setError(Boolean.FALSE);
-                    response.setMessage(Constants.SELECT_OK);
-                    response.setContent(categoria);
-                }
+                
             } catch (Exception e) {
-                response.setError(Boolean.TRUE);
-                response.setMessage(e.getCause().getMessage());
                 e.printStackTrace();
             } finally {
                 conn.close();
             }
         }
-        return response;
+        return categoria;
     }
 
     @POST

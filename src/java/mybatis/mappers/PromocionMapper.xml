@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="promocion">
+
+    <select id="readAll" resultType="pojo.Promocion">
+        SELECT
+            *
+        FROM
+            Promocion
+    </select>
+
+    <select id="readAllActive" resultType="pojo.Promocion">
+        SELECT
+            *
+        FROM
+            Promocion
+        WHERE estatus = true
+    </select>
+
+    <select id="readById" parameterType="int" resultType="pojo.Promocion">
+        SELECT
+            *
+        FROM
+            Promocion
+        WHERE id = #{id}
+    </select>
+
+    <select id="readByIdActive" parameterType="int" resultType="pojo.Promocion">
+        SELECT
+            *
+        FROM
+            Promocion
+        WHERE id = #{id} AND estatus = true
+    </select>
+
+    <select id="readBySucursalId" parameterType="int" resultType="pojo.Promocion">
+        SELECT
+            Promocion.*
+        FROM
+            tiene_promocion
+        LEFT JOIN 
+            Promocion
+        ON
+            Promocion.id = tiene_promocion.promocionId
+        WHERE sucursalId = #{id}
+    </select>
+
+    <select id="readBySucursalIdActive" parameterType="int" resultType="pojo.Promocion">
+        SELECT
+            Promocion.*
+        FROM
+            tiene_promocion
+        LEFT JOIN 
+            Promocion
+        ON
+            Promocion.id = tiene_promocion.promocionId
+        WHERE sucursalId = #{id} AND estatus = true
+    </select>
+
+    <select id="readByNombre" parameterType="String" resultType="pojo.Promocion">
+        SELECT
+            *
+        FROM
+            Promocion
+        WHERE nombre = #{nombre}
+    </select>
+
+    <insert id="create" parameterType="pojo.Promocion">
+        INSERT INTO
+        Promocion (
+            nombre,
+            descripcion,
+            fechaDeInicio,
+            fechaDeTermino,
+            tipoDePromocion,
+            descuento,
+            costo,
+            categoriaId,
+            estatus
+        )
+        VALUES
+        (
+            #{nombre},
+            #{descripcion},
+            #{fechaDeInicio},
+            #{fechaDeTermino},
+            #{tipoDePromocion},
+            #{descuento},
+            #{costo},
+            #{categoriaId},
+            #{estatus}
+        )
+    </insert>
+
+    <update id="update" parameterType="pojo.Promocion">
+        UPDATE Promocion SET 
+            nombre = #{nombre},
+            descripcion = #{descripcion},
+            fechaDeInicio = #{fechaDeInicio},
+            fechaDeTermino = #{fechaDeTermino},
+            tipoDePromocion = #{tipoDePromocion},
+            descuento = #{descuento},
+            costo = #{costo},
+            categoriaId = #{categoriaId},
+            estatus = #{estatus}
+        WHERE id = #{id}
+    </update>
+
+    <update id="delete" parameterType="int">
+        UPDATE
+            Promocion
+        SET 
+            estatus = false
+        WHERE id = #{id}   
+    </update>
+
+</mapper>

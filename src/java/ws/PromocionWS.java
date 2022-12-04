@@ -24,6 +24,8 @@ import org.apache.ibatis.session.SqlSession;
 import com.google.gson.Gson;
 
 import mybatis.MyBatisUtil;
+import pojo.Categoria;
+import pojo.Promocion;
 import pojo.Response;
 import pojo.Restriccion;
 import utils.Constants;
@@ -33,30 +35,33 @@ import utils.Constants;
  *
  * @author alethetwin
  */
-@Path("restriccion")
-public class RestriccionWS {
+@Path("promocion")
+public class PromocionWS {
 
     @Context
     private UriInfo context;
     private Gson gson = new Gson();
 
     /**
-     * Creates a new instance of EmpresaWS
+     * Creates a new instance of PromocionWS
      */
-    public RestriccionWS() {
+
+    public PromocionWS() {
     }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public List<Restriccion> getAll(@QueryParam("promocionID") Integer promocionId) {
-        List<Restriccion> restricciones = null;
+    public List<Promocion> getAll(@QueryParam("sucursalId") Integer sucursalId) {
+        List<Promocion> promociones = null;
+
         SqlSession conn = MyBatisUtil.getSession();
+
         if (conn != null) {
             try {
-                if(promocionId == null) {
-                    restricciones = conn.selectList("restriccion.readAll");
+                if (sucursalId == null) {
+                    promociones = conn.selectList("promocion.readAll");
                 } else {
-                    restricciones = conn.selectList("restriccion.readByPromocionId", promocionId);
+                    promociones = conn.selectList("promocion.readBySucursalId", sucursalId);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -64,44 +69,53 @@ public class RestriccionWS {
                 conn.close();
             }
         }
-        return restricciones;
+
+        for (int i = 0; i < promociones.size(); i++) {
+            Promocion p = promociones.get(i);
+            List<Restriccion> restricciones = new RestriccionWS().getAll(p.getId());
+            Categoria categoria = new CategoriaWS().getById(p.getCategoriaId());
+
+            p.setRestricciones(restricciones);
+            p.setCategoria(categoria);
+        }
+
+        return promociones;
     }
 
     @Path("/{id}")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response<Restriccion> getById(@PathParam("id") Integer id) {
-        Response<Restriccion> response = new Response<>();
-        Restriccion restriccion = null;
+    public Promocion getById(@PathParam("id") Integer id) {
+        Promocion promocion = null;
+
         SqlSession conn = MyBatisUtil.getSession();
+
         if (conn != null) {
             try {
-                restriccion = conn.selectOne("restriccion.readById", id);
-                if(restriccion == null) {
-                    response.setError(Boolean.TRUE);
-                    response.setMessage(Constants.SELECT_FAIL);
-                } else {
-                    response.setError(Boolean.FALSE);
-                    response.setMessage(Constants.SELECT_OK);
-                    response.setContent(restriccion);
-                }
+                promocion = conn.selectOne("promocion.readById", id);
             } catch (Exception e) {
-                response.setError(Boolean.TRUE);
-                response.setMessage(e.getCause().getMessage());
                 e.printStackTrace();
             } finally {
                 conn.close();
             }
         }
-        return response;
+
+        List<Restriccion> restricciones = new RestriccionWS().getAll(promocion.getId());
+        Categoria categoria = new CategoriaWS().getById(promocion.getCategoriaId());
+
+        promocion.setCategoria(categoria);
+        promocion.setRestricciones(restricciones);
+
+
+        return promocion;
     }
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response<Restriccion> create(String json) {
-        Response<Restriccion> response = new Response<>();
-        Restriccion restriccion = gson.fromJson(json, Restriccion.class);
+    public Response<Promocion> create(String json) {
+        Response<Promocion> response = new Response<>();
+        Promocion promocion = gson.fromJson(json, Promocion.class);
 
         SqlSession conn = MyBatisUtil.getSession();
 
@@ -112,21 +126,25 @@ public class RestriccionWS {
         }
 
         try {
-            int result = conn.insert("restriccion.create", restriccion);
+            int result = conn.insert("promocion.create", promocion);
             conn.commit();
+
             if (result == 0) {
                 response.setError(true);
                 response.setMessage(Constants.CREATE_FAIL);
             } else {
                 response.setError(true);
                 response.setMessage(Constants.CREATE_OK);
-                
-                Restriccion agregada = conn.selectOne("restriccion.readByNombre", restriccion.getNombre());
+
+                Promocion agregada = conn.selectOne("promocion.readByNombre", promocion.getNombre());
                 response.setContent(agregada);
             }
         } catch (Exception e) {
             response.setError(Boolean.TRUE);
-            response.setMessage(e.getCause().getMessage());
+            if (e.getCause() != null)
+                response.setMessage(e.getCause().getMessage());
+            else
+                response.setMessage(e.getMessage());
             e.printStackTrace();
         } finally {
             conn.close();
@@ -135,14 +153,14 @@ public class RestriccionWS {
         return response;
     }
 
-    @PUT
     @Path("/{id}")
+    @PUT
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response<Restriccion> update(@PathParam("id") Integer id, String json) {
-        Response<Restriccion> response = new Response<>();
-        Restriccion restriccion = gson.fromJson(json, Restriccion.class);
-        restriccion.setId(id);
+    public Response<Promocion> update(@PathParam("id") Integer id, String json) {
+        Response<Promocion> response = new Response<>();
+        Promocion promocion = gson.fromJson(json, Promocion.class);
+        promocion.setId(id);
 
         SqlSession conn = MyBatisUtil.getSession();
 
@@ -153,15 +171,18 @@ public class RestriccionWS {
         }
 
         try {
-            int result = conn.insert("restriccion.update", restriccion);
+            int result = conn.update("promocion.update", promocion);
             conn.commit();
+
             if (result == 0) {
                 response.setError(true);
                 response.setMessage(Constants.UPDATE_FAIL);
             } else {
                 response.setError(true);
                 response.setMessage(Constants.UPDATE_OK);
-                response.setContent(restriccion);
+
+                Promocion actualizada = conn.selectOne("promocion.readById", promocion.getId());
+                response.setContent(actualizada);
             }
         } catch (Exception e) {
             response.setError(Boolean.TRUE);
@@ -176,9 +197,10 @@ public class RestriccionWS {
 
     @Path("/{id}")
     @DELETE
+    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response<Restriccion> delete(@PathParam("id") Integer id) {
-        Response<Restriccion> response = new Response<>();
+    public Response<Promocion> delete(@PathParam("id") Integer id) {
+        Response<Promocion> response = new Response<>();
 
         SqlSession conn = MyBatisUtil.getSession();
 
@@ -189,8 +211,9 @@ public class RestriccionWS {
         }
 
         try {
-            int result = conn.insert("restriccion.delete", id);
+            int result = conn.update("promocion.delete", id);
             conn.commit();
+
             if (result == 0) {
                 response.setError(true);
                 response.setMessage(Constants.DELETE_FAIL);
@@ -198,7 +221,7 @@ public class RestriccionWS {
                 response.setError(true);
                 response.setMessage(Constants.DELETE_OK);
 
-                Restriccion eliminada = conn.selectOne("restriccion.readById", id);
+                Promocion eliminada = conn.selectOne("promocion.readById", id);
                 response.setContent(eliminada);
             }
         } catch (Exception e) {

@@ -53,10 +53,10 @@ public class SucursalWS {
         List<Sucursal> sucursales = null;
 
         SqlSession conn = MyBatisUtil.getSession();
-        
-        if(conn != null) {
+
+        if (conn != null) {
             try {
-                if(encargadoId == null) {
+                if (encargadoId == null) {
                     sucursales = conn.selectList("sucursal.readAll");
                 } else {
                     sucursales = conn.selectList("sucursal.readByEncargadoId", encargadoId);
@@ -67,8 +67,29 @@ public class SucursalWS {
                 conn.close();
             }
         }
-        
+
         return sucursales;
+    }
+
+    @Path("/{id}")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public Sucursal getById(@PathParam("id") Integer id) {
+        Sucursal sucursal = null;
+
+        SqlSession conn = MyBatisUtil.getSession();
+
+        if (conn != null) {
+            try {
+                sucursal = conn.selectOne("sucursal.readById", id);
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                conn.close();
+            }
+        }
+        
+        return sucursal;
     }
 
     @POST
@@ -96,13 +117,16 @@ public class SucursalWS {
             } else {
                 response.setError(true);
                 response.setMessage(Constants.CREATE_OK);
-                
+
                 Sucursal agregada = conn.selectOne("sucursal.readByNombre", sucursal.getNombre());
                 response.setContent(agregada);
             }
         } catch (Exception e) {
             response.setError(Boolean.TRUE);
-            if(e.getCause() != null) response.setMessage(e.getCause().getMessage()); else response.setMessage(e.getMessage());
+            if (e.getCause() != null)
+                response.setMessage(e.getCause().getMessage());
+            else
+                response.setMessage(e.getMessage());
             e.printStackTrace();
         } finally {
             conn.close();
@@ -138,7 +162,7 @@ public class SucursalWS {
             } else {
                 response.setError(true);
                 response.setMessage(Constants.UPDATE_OK);
-                
+
                 Sucursal actualizada = conn.selectOne("sucursal.readById", sucursal.getId());
                 response.setContent(actualizada);
             }
@@ -178,7 +202,7 @@ public class SucursalWS {
             } else {
                 response.setError(true);
                 response.setMessage(Constants.DELETE_OK);
-                
+
                 Sucursal eliminada = conn.selectOne("sucursal.readById", id);
                 response.setContent(eliminada);
             }
