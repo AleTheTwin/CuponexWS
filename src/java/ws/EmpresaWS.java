@@ -67,30 +67,19 @@ public class EmpresaWS {
     @Path("/{id}")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response<Empresa> getById(@PathParam("id") Integer id) {
-        Response<Empresa> response = new Response<>();
+    public Empresa getById(@PathParam("id") Integer id) {
         Empresa empresa = null;
         SqlSession conn = MyBatisUtil.getSession();
         if (conn != null) {
             try {
                 empresa = conn.selectOne("empresa.readById", id);
-                if(empresa == null) {
-                    response.setError(Boolean.TRUE);
-                    response.setMessage(Constants.SELECT_FAIL);
-                } else {
-                    response.setError(Boolean.FALSE);
-                    response.setMessage(Constants.SELECT_OK);
-                    response.setContent(empresa);
-                }
             } catch (Exception e) {
-                response.setError(Boolean.TRUE);
-                response.setMessage(e.getCause().getMessage());
                 e.printStackTrace();
             } finally {
                 conn.close();
             }
         }
-        return response;
+        return empresa;
     }
 
     @POST
@@ -115,7 +104,7 @@ public class EmpresaWS {
                 response.setError(true);
                 response.setMessage(Constants.CREATE_FAIL);
             } else {
-                response.setError(true);
+                response.setError(false);
                 response.setMessage(Constants.CREATE_OK);
                 Empresa agregada = conn.selectOne("empresa.readByCorreo", empresa.getCorreo());
 
@@ -150,13 +139,13 @@ public class EmpresaWS {
         }
 
         try {
-            int result = conn.insert("empresa.update", empresa);
+            int result = conn.update("empresa.update", empresa);
             conn.commit();
             if (result == 0) {
                 response.setError(true);
                 response.setMessage(Constants.UPDATE_FAIL);
             } else {
-                response.setError(true);
+                response.setError(false);
                 response.setMessage(Constants.UPDATE_OK);
                 response.setContent(empresa);
             }
@@ -186,13 +175,13 @@ public class EmpresaWS {
         }
 
         try {
-            int result = conn.insert("empresa.delete", id);
+            int result = conn.update("empresa.delete", id);
             conn.commit();
             if (result == 0) {
                 response.setError(true);
                 response.setMessage(Constants.DELETE_FAIL);
             } else {
-                response.setError(true);
+                response.setError(false);
                 response.setMessage(Constants.DELETE_OK);
 
                 Empresa eliminada = conn.selectOne("empresa.readById", id);

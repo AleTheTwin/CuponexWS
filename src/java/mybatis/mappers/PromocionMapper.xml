@@ -115,4 +115,32 @@
         WHERE id = #{id}   
     </update>
 
+    <insert id="addToSucursal" parameterType="map">
+        INSERT INTO
+            tiene_promocion (promocionId, sucursalId)
+        VALUES (#{promocionId},#{sucursalId})
+    </insert>
+
+    <insert id="addRestriccion" parameterType="map">
+        INSERT INTO
+            tiene_restriccion (promocionId, restriccionId)
+        VALUES (#{promocionId},#{restriccionId})
+    </insert>
+
+    <delete id="removeRestriccion" parameterType="map">
+        DELETE FROM tiene_restriccion
+        WHERE 
+            promocionId = #{promocionId}
+        AND 
+            restriccionId = #{restriccionId}
+    </delete>
+
+    <delete id="removeFromSucursal" parameterType="map">
+        DELETE FROM tiene_promocion
+        WHERE 
+            promocionId = #{promocionId}
+        AND 
+            sucursalId = #{sucursalId}
+    </delete>
+
 </mapper>

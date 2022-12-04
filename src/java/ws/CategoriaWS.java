@@ -105,7 +105,7 @@ public class CategoriaWS {
                 response.setError(true);
                 response.setMessage(Constants.CREATE_FAIL);
             } else {
-                response.setError(true);
+                response.setError(false);
                 response.setMessage(Constants.CREATE_OK);
                 
                 Categoria agregada = conn.selectOne("categoria.readByNombre", categoria.getNombre());
@@ -140,13 +140,13 @@ public class CategoriaWS {
         }
 
         try {
-            int result = conn.insert("categoria.update", categoria);
+            int result = conn.update("categoria.update", categoria);
             conn.commit();
             if (result == 0) {
                 response.setError(true);
                 response.setMessage(Constants.UPDATE_FAIL);
             } else {
-                response.setError(true);
+                response.setError(false);
                 response.setMessage(Constants.UPDATE_OK);
                 response.setContent(categoria);
             }
@@ -176,13 +176,13 @@ public class CategoriaWS {
         }
 
         try {
-            int result = conn.insert("categoria.delete", id);
+            int result = conn.delete("categoria.delete", id);
             conn.commit();
             if (result == 0) {
                 response.setError(true);
                 response.setMessage(Constants.DELETE_FAIL);
             } else {
-                response.setError(true);
+                response.setError(false);
                 response.setMessage(Constants.DELETE_OK);
 
                 Categoria eliminada = conn.selectOne("categoria.readById", id);

@@ -70,30 +70,19 @@ public class RestriccionWS {
     @Path("/{id}")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response<Restriccion> getById(@PathParam("id") Integer id) {
-        Response<Restriccion> response = new Response<>();
+    public Restriccion getById(@PathParam("id") Integer id) {
         Restriccion restriccion = null;
         SqlSession conn = MyBatisUtil.getSession();
         if (conn != null) {
             try {
                 restriccion = conn.selectOne("restriccion.readById", id);
-                if(restriccion == null) {
-                    response.setError(Boolean.TRUE);
-                    response.setMessage(Constants.SELECT_FAIL);
-                } else {
-                    response.setError(Boolean.FALSE);
-                    response.setMessage(Constants.SELECT_OK);
-                    response.setContent(restriccion);
-                }
             } catch (Exception e) {
-                response.setError(Boolean.TRUE);
-                response.setMessage(e.getCause().getMessage());
                 e.printStackTrace();
             } finally {
                 conn.close();
             }
         }
-        return response;
+        return restriccion;
     }
 
     @POST
@@ -118,7 +107,7 @@ public class RestriccionWS {
                 response.setError(true);
                 response.setMessage(Constants.CREATE_FAIL);
             } else {
-                response.setError(true);
+                response.setError(false);
                 response.setMessage(Constants.CREATE_OK);
                 
                 Restriccion agregada = conn.selectOne("restriccion.readByNombre", restriccion.getNombre());
@@ -153,13 +142,13 @@ public class RestriccionWS {
         }
 
         try {
-            int result = conn.insert("restriccion.update", restriccion);
+            int result = conn.update("restriccion.update", restriccion);
             conn.commit();
             if (result == 0) {
                 response.setError(true);
                 response.setMessage(Constants.UPDATE_FAIL);
             } else {
-                response.setError(true);
+                response.setError(false);
                 response.setMessage(Constants.UPDATE_OK);
                 response.setContent(restriccion);
             }
@@ -189,13 +178,13 @@ public class RestriccionWS {
         }
 
         try {
-            int result = conn.insert("restriccion.delete", id);
+            int result = conn.delete("restriccion.delete", id);
             conn.commit();
             if (result == 0) {
                 response.setError(true);
                 response.setMessage(Constants.DELETE_FAIL);
             } else {
-                response.setError(true);
+                response.setError(false);
                 response.setMessage(Constants.DELETE_OK);
 
                 Restriccion eliminada = conn.selectOne("restriccion.readById", id);

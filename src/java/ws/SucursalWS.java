@@ -115,7 +115,7 @@ public class SucursalWS {
                 response.setError(true);
                 response.setMessage(Constants.CREATE_FAIL);
             } else {
-                response.setError(true);
+                response.setError(false);
                 response.setMessage(Constants.CREATE_OK);
 
                 Sucursal agregada = conn.selectOne("sucursal.readByNombre", sucursal.getNombre());
@@ -160,7 +160,7 @@ public class SucursalWS {
                 response.setError(true);
                 response.setMessage(Constants.UPDATE_FAIL);
             } else {
-                response.setError(true);
+                response.setError(false);
                 response.setMessage(Constants.UPDATE_OK);
 
                 Sucursal actualizada = conn.selectOne("sucursal.readById", sucursal.getId());
@@ -200,7 +200,7 @@ public class SucursalWS {
                 response.setError(true);
                 response.setMessage(Constants.DELETE_FAIL);
             } else {
-                response.setError(true);
+                response.setError(false);
                 response.setMessage(Constants.DELETE_OK);
 
                 Sucursal eliminada = conn.selectOne("sucursal.readById", id);

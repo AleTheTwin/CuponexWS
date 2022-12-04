@@ -4,6 +4,7 @@
  */
 package ws;
 
+import java.util.HashMap;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -28,6 +29,7 @@ import pojo.Categoria;
 import pojo.Promocion;
 import pojo.Response;
 import pojo.Restriccion;
+import pojo.Sucursal;
 import utils.Constants;
 
 /**
@@ -133,7 +135,7 @@ public class PromocionWS {
                 response.setError(true);
                 response.setMessage(Constants.CREATE_FAIL);
             } else {
-                response.setError(true);
+                response.setError(false);
                 response.setMessage(Constants.CREATE_OK);
 
                 Promocion agregada = conn.selectOne("promocion.readByNombre", promocion.getNombre());
@@ -178,7 +180,7 @@ public class PromocionWS {
                 response.setError(true);
                 response.setMessage(Constants.UPDATE_FAIL);
             } else {
-                response.setError(true);
+                response.setError(false);
                 response.setMessage(Constants.UPDATE_OK);
 
                 Promocion actualizada = conn.selectOne("promocion.readById", promocion.getId());
@@ -218,7 +220,7 @@ public class PromocionWS {
                 response.setError(true);
                 response.setMessage(Constants.DELETE_FAIL);
             } else {
-                response.setError(true);
+                response.setError(false);
                 response.setMessage(Constants.DELETE_OK);
 
                 Promocion eliminada = conn.selectOne("promocion.readById", id);
@@ -234,4 +236,185 @@ public class PromocionWS {
 
         return response;
     }
+
+    @Path("/{id}/sucursal")
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response<Promocion> addToSucursal(@PathParam("id") Integer id, String json) {
+        Response<Promocion> response = new Response<>();
+        Sucursal sucursal = gson.fromJson(json, Sucursal.class);
+
+        HashMap<String, Integer> params = new HashMap<>();
+
+        params.put("promocionId", id);
+        params.put("sucursalId", sucursal.getId());
+
+        SqlSession conn = MyBatisUtil.getSession();
+
+        if (conn == null) {
+            response.setError(true);
+            response.setMessage(Constants.ERROR_DE_CONEXION_DB);
+            return response;
+        }
+
+        try {
+            int result = conn.insert("promocion.addToSucursal", params);
+            conn.commit();
+
+            if (result == 0) {
+                response.setError(true);
+                response.setMessage(Constants.UPDATE_FAIL);
+            } else {
+                response.setError(false);
+                response.setMessage(Constants.UPDATE_OK);
+
+                Promocion actualizada = conn.selectOne("promocion.readById", id);
+                response.setContent(actualizada);
+            }
+        } catch (Exception e) {
+            response.setError(Boolean.TRUE);
+            response.setMessage(e.getCause().getMessage());
+            e.printStackTrace();
+        } finally {
+            conn.close();
+        }
+
+        return response;
+    }
+
+    @Path("/{id}/restriccion")
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response<Promocion> addRestriccion(@PathParam("id") Integer id, String json) {
+        Response<Promocion> response = new Response<>();
+        Restriccion restriccion = gson.fromJson(json, Restriccion.class);
+
+        HashMap<String, Integer> params = new HashMap<>();
+
+        params.put("promocionId", id);
+        params.put("restriccionId", restriccion.getId());
+
+        SqlSession conn = MyBatisUtil.getSession();
+
+        if (conn == null) {
+            response.setError(true);
+            response.setMessage(Constants.ERROR_DE_CONEXION_DB);
+            return response;
+        }
+
+        try {
+            int result = conn.insert("promocion.addRestriccion", params);
+            conn.commit();
+
+            if (result == 0) {
+                response.setError(true);
+                response.setMessage(Constants.UPDATE_FAIL);
+            } else {
+                response.setError(false);
+                response.setMessage(Constants.UPDATE_OK);
+
+                Promocion actualizada = conn.selectOne("promocion.readById", id);
+                response.setContent(actualizada);
+            }
+        } catch (Exception e) {
+            response.setError(Boolean.TRUE);
+            response.setMessage(e.getCause().getMessage());
+            e.printStackTrace();
+        } finally {
+            conn.close();
+        }
+
+        return response;
+    }
+
+    @Path("/{id}/restriccion/{restriccionId}")
+    @DELETE
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response<Promocion> removeRestriccion(@PathParam("id") Integer id,@PathParam("restriccionId") Integer restriccionId) {
+        Response<Promocion> response = new Response<>();
+
+        HashMap<String, Integer> params = new HashMap<>();
+
+        params.put("promocionId", id);
+        params.put("restriccionId", restriccionId);
+
+        SqlSession conn = MyBatisUtil.getSession();
+
+        if (conn == null) {
+            response.setError(true);
+            response.setMessage(Constants.ERROR_DE_CONEXION_DB);
+            return response;
+        }
+
+        try {
+            int result = conn.delete("promocion.removeRestriccion", params);
+            conn.commit();
+
+            if (result == 0) {
+                response.setError(true);
+                response.setMessage(Constants.UPDATE_FAIL);
+            } else {
+                response.setError(false);
+                response.setMessage(Constants.UPDATE_OK);
+
+                Promocion actualizada = conn.selectOne("promocion.readById", id);
+                response.setContent(actualizada);
+            }
+        } catch (Exception e) {
+            response.setError(Boolean.TRUE);
+            response.setMessage(e.getCause().getMessage());
+            e.printStackTrace();
+        } finally {
+            conn.close();
+        }
+
+        return response;
+    }
+
+    @Path("/{id}/sucursal/{sucursalId}")
+    @DELETE
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response<Promocion> removeFromSucursal(@PathParam("id") Integer id,@PathParam("sucursalId") Integer sucursalId) {
+        Response<Promocion> response = new Response<>();
+
+        HashMap<String, Integer> params = new HashMap<>();
+
+        params.put("promocionId", id);
+        params.put("sucursalId", sucursalId);
+
+        SqlSession conn = MyBatisUtil.getSession();
+
+        if (conn == null) {
+            response.setError(true);
+            response.setMessage(Constants.ERROR_DE_CONEXION_DB);
+            return response;
+        }
+
+        try {
+            int result = conn.delete("promocion.removeFromSucursal", params);
+            conn.commit();
+
+            if (result == 0) {
+                response.setError(true);
+                response.setMessage(Constants.UPDATE_FAIL);
+            } else {
+                response.setError(false);
+                response.setMessage(Constants.UPDATE_OK);
+
+                Promocion actualizada = conn.selectOne("promocion.readById", id);
+                response.setContent(actualizada);
+            }
+        } catch (Exception e) {
+            response.setError(Boolean.TRUE);
+            response.setMessage(e.getCause().getMessage());
+            e.printStackTrace();
+        } finally {
+            conn.close();
+        }
+
+        return response;
+    }
+
 }
