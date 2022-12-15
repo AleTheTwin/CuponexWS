@@ -4,55 +4,55 @@
 <mapper namespace="promocion">
 
     <select id="readAll" resultType="pojo.Promocion">
-        SELECT id, nombre, descripcion, fechaDeInicio, fechaDeTermino, tipoDePromocion, restriccionesString, descuento, costo, categoriaId, TO_BASE64(foto) as foto
+        SELECT id, nombre, descripcion, fechaDeInicio, fechaDeTermino, tipoDePromocion, restriccionesString, descuento, categoriaId, TO_BASE64(foto) as foto
         FROM Promocion
     </select>
     
     <select id="readByCategoriaId" parameterType="int" resultType="pojo.Promocion">
-        SELECT  id, nombre, descripcion, fechaDeInicio, fechaDeTermino, tipoDePromocion, restriccionesString, descuento, costo, categoriaId, TO_BASE64(foto) as foto
+        SELECT  id, nombre, descripcion, fechaDeInicio, fechaDeTermino, tipoDePromocion, restriccionesString, descuento, categoriaId, TO_BASE64(foto) as foto
         FROM Promocion WHERE  categoriaId = #{id} 
         
     </select>
 
     <select id="readAllActive" resultType="pojo.Promocion">
-        SELECT id, nombre, descripcion, fechaDeInicio, fechaDeTermino, tipoDePromocion, restriccionesString, descuento, costo, categoriaId, TO_BASE64(foto) as foto
+        SELECT id, nombre, descripcion, fechaDeInicio, fechaDeTermino, tipoDePromocion, restriccionesString, descuento, categoriaId, TO_BASE64(foto) as foto
         FROM Promocion WHERE estatus = true
     </select>
 
     <select id="readById" parameterType="int" resultType="pojo.Promocion">
-        SELECT id, nombre, descripcion, fechaDeInicio, fechaDeTermino, tipoDePromocion, restriccionesString, descuento, costo, categoriaId, TO_BASE64(foto) as foto
+        SELECT id, nombre, descripcion, fechaDeInicio, fechaDeTermino, tipoDePromocion, restriccionesString, descuento, categoriaId, TO_BASE64(foto) as foto
         FROM Promocion WHERE id = #{id}
     </select>
 
     <select id="readByIdActive" parameterType="int" resultType="pojo.Promocion">
-        SELECT id, nombre, descripcion, fechaDeInicio, fechaDeTermino, tipoDePromocion, restriccionesString, descuento, costo, categoriaId, TO_BASE64(foto) as foto
+        SELECT id, nombre, descripcion, fechaDeInicio, fechaDeTermino, tipoDePromocion, restriccionesString, descuento, categoriaId, TO_BASE64(foto) as foto
         FROM Promocion WHERE id = #{id} AND estatus = true
     </select>
 
     <select id="readBySucursalId" parameterType="int" resultType="pojo.Promocion">
-        SELECT Promocion.id, nombre, descripcion, fechaDeInicio, fechaDeTermino, tipoDePromocion, restriccionesString, descuento, costo, categoriaId, TO_BASE64(foto) as foto
+        SELECT Promocion.id, nombre, descripcion, fechaDeInicio, fechaDeTermino, tipoDePromocion, restriccionesString, descuento, categoriaId, TO_BASE64(foto) as foto
         FROM tiene_promocion LEFT JOIN  Promocion ON Promocion.id = tiene_promocion.promocionId
         WHERE sucursalId = #{id}
     </select>
 
     <select id="readBySucursalIdActive" parameterType="int" resultType="pojo.Promocion">
-        SELECT Promocion.id, nombre, descripcion, fechaDeInicio, fechaDeTermino, tipoDePromocion, restriccionesString, descuento, costo, categoriaId, TO_BASE64(foto) as foto
+        SELECT Promocion.id, nombre, descripcion, fechaDeInicio, fechaDeTermino, tipoDePromocion, restriccionesString, descuento, categoriaId, TO_BASE64(foto) as foto
         FROM tiene_promocion LEFT JOIN  Promocion ON Promocion.id = tiene_promocion.promocionId
         WHERE sucursalId = #{id} AND estatus = true
     </select>
 
     <select id="readByNombre" parameterType="String" resultType="pojo.Promocion">
-        SELECT id, nombre, descripcion, fechaDeInicio, fechaDeTermino, tipoDePromocion, restriccionesString, descuento, costo, categoriaId, TO_BASE64(foto) as foto
+        SELECT id, nombre, descripcion, fechaDeInicio, fechaDeTermino, tipoDePromocion, restriccionesString, descuento, categoriaId, TO_BASE64(foto) as foto
         FROM Promocion WHERE nombre = #{nombre}
     </select>
 
     <insert id="create" parameterType="pojo.Promocion">
-        INSERT INTO Promocion ( nombre, descripcion, fechaDeInicio, fechaDeTermino, tipoDePromocion, descuento, costo, categoriaId, restriccionesString, estatus)
-        VALUES ( #{nombre}, #{descripcion}, #{fechaDeInicio}, #{fechaDeTermino}, #{tipoDePromocion}, #{descuento}, #{costo}, #{categoriaId}, #{restriccionesString}, #{estatus})
+        INSERT INTO Promocion ( nombre, descripcion, fechaDeInicio, fechaDeTermino, tipoDePromocion, descuento, categoriaId, restriccionesString, estatus)
+        VALUES ( #{nombre}, #{descripcion}, #{fechaDeInicio}, #{fechaDeTermino}, #{tipoDePromocion}, #{descuento}, #{categoriaId}, #{restriccionesString}, #{estatus})
     </insert>
 
     <update id="update" parameterType="pojo.Promocion">
-        UPDATE Promocion SET  nombre = #{nombre}, descripcion = #{descripcion}, fechaDeInicio = #{fechaDeInicio}, fechaDeTermino = #{fechaDeTermino}, tipoDePromocion = #{tipoDePromocion}, descuento = #{descuento}, costo = #{costo}, categoriaId = #{categoriaId}, restriccionesString = #{restriccionesString}, estatus = #{estatus}
+        UPDATE Promocion SET  nombre = #{nombre}, descripcion = #{descripcion}, fechaDeInicio = #{fechaDeInicio}, fechaDeTermino = #{fechaDeTermino}, tipoDePromocion = #{tipoDePromocion}, descuento = #{descuento}, categoriaId = #{categoriaId}, restriccionesString = #{restriccionesString}, estatus = #{estatus}
         WHERE id = #{id}
     </update>
 
