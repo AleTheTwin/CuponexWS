@@ -28,7 +28,6 @@ import mybatis.MyBatisUtil;
 import pojo.Categoria;
 import pojo.Promocion;
 import pojo.Response;
-import pojo.Restriccion;
 import pojo.Sucursal;
 import utils.Constants;
 
@@ -51,6 +50,10 @@ public class PromocionWS {
     public PromocionWS() {
     }
 
+    /**
+     * @param sucursalId parámetro de query, si no es nulo, solo se regresaran las promociones de la sucursal con el id enviado. De ser nulo se regresan todas las promociones.
+     * @return List<Promocion> lista de las promociones recuperadas
+     */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public List<Promocion> getAll(@QueryParam("sucursalId") Integer sucursalId) {
@@ -61,7 +64,7 @@ public class PromocionWS {
         if (conn != null) {
             try {
                 if (sucursalId == null) {
-                    promociones = conn.selectList("promocion.readAll");
+                    promociones = conn.selectList("promocion.readAllActive");
                 } else {
                     promociones = conn.selectList("promocion.readBySucursalId", sucursalId);
                 }
@@ -74,10 +77,8 @@ public class PromocionWS {
 
         for (int i = 0; i < promociones.size(); i++) {
             Promocion p = promociones.get(i);
-            List<Restriccion> restricciones = new RestriccionWS().getAll(p.getId());
             Categoria categoria = new CategoriaWS().getById(p.getCategoriaId());
 
-            p.setRestricciones(restricciones);
             p.setCategoria(categoria);
         }
 
@@ -102,12 +103,8 @@ public class PromocionWS {
             }
         }
 
-        List<Restriccion> restricciones = new RestriccionWS().getAll(promocion.getId());
         Categoria categoria = new CategoriaWS().getById(promocion.getCategoriaId());
-
         promocion.setCategoria(categoria);
-        promocion.setRestricciones(restricciones);
-
 
         return promocion;
     }
@@ -283,96 +280,6 @@ public class PromocionWS {
         return response;
     }
 
-    @Path("/{id}/restriccion")
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response<Promocion> addRestriccion(@PathParam("id") Integer id, String json) {
-        Response<Promocion> response = new Response<>();
-        Restriccion restriccion = gson.fromJson(json, Restriccion.class);
-
-        HashMap<String, Integer> params = new HashMap<>();
-
-        params.put("promocionId", id);
-        params.put("restriccionId", restriccion.getId());
-
-        SqlSession conn = MyBatisUtil.getSession();
-
-        if (conn == null) {
-            response.setError(true);
-            response.setMessage(Constants.ERROR_DE_CONEXION_DB);
-            return response;
-        }
-
-        try {
-            int result = conn.insert("promocion.addRestriccion", params);
-            conn.commit();
-
-            if (result == 0) {
-                response.setError(true);
-                response.setMessage(Constants.UPDATE_FAIL);
-            } else {
-                response.setError(false);
-                response.setMessage(Constants.UPDATE_OK);
-
-                Promocion actualizada = conn.selectOne("promocion.readById", id);
-                response.setContent(actualizada);
-            }
-        } catch (Exception e) {
-            response.setError(Boolean.TRUE);
-            response.setMessage(e.getCause().getMessage());
-            e.printStackTrace();
-        } finally {
-            conn.close();
-        }
-
-        return response;
-    }
-
-    @Path("/{id}/restriccion/{restriccionId}")
-    @DELETE
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response<Promocion> removeRestriccion(@PathParam("id") Integer id,@PathParam("restriccionId") Integer restriccionId) {
-        Response<Promocion> response = new Response<>();
-
-        HashMap<String, Integer> params = new HashMap<>();
-
-        params.put("promocionId", id);
-        params.put("restriccionId", restriccionId);
-
-        SqlSession conn = MyBatisUtil.getSession();
-
-        if (conn == null) {
-            response.setError(true);
-            response.setMessage(Constants.ERROR_DE_CONEXION_DB);
-            return response;
-        }
-
-        try {
-            int result = conn.delete("promocion.removeRestriccion", params);
-            conn.commit();
-
-            if (result == 0) {
-                response.setError(true);
-                response.setMessage(Constants.UPDATE_FAIL);
-            } else {
-                response.setError(false);
-                response.setMessage(Constants.UPDATE_OK);
-
-                Promocion actualizada = conn.selectOne("promocion.readById", id);
-                response.setContent(actualizada);
-            }
-        } catch (Exception e) {
-            response.setError(Boolean.TRUE);
-            response.setMessage(e.getCause().getMessage());
-            e.printStackTrace();
-        } finally {
-            conn.close();
-        }
-
-        return response;
-    }
-
     @Path("/{id}/sucursal/{sucursalId}")
     @DELETE
     @Produces(MediaType.APPLICATION_JSON)
@@ -409,6 +316,50 @@ public class PromocionWS {
         } catch (Exception e) {
             response.setError(Boolean.TRUE);
             response.setMessage(e.getCause().getMessage());
+            e.printStackTrace();
+        } finally {
+            conn.close();
+        }
+
+        return response;
+    }
+
+
+
+    @Path("/{id}/foto")
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response<Promocion> setFoto(@PathParam("id") Integer id, byte[] foto) {
+        Response<Promocion> response = new Response<>();
+
+        SqlSession conn = MyBatisUtil.getSession();
+
+        HashMap<String, Object> parametros = new HashMap<>();
+        
+        parametros.put("id", id);
+        parametros.put("foto", foto);
+
+        if (conn == null) {
+            response.setError(true);
+            response.setMessage(Constants.ERROR_DE_CONEXION_DB);
+            return response;
+        }
+
+        try {
+            int result = conn.update("promocion.setFoto", parametros);
+            conn.commit();
+            if (result == 0) {
+                response.setError(Boolean.TRUE);
+                response.setMessage("No se pudo establecer la foto");
+            } else {
+                response.setError(Boolean.FALSE);
+                response.setMessage("Foto establecida con éxito");
+
+                Promocion usuaroActualizado = conn.selectOne("promocion.readById", id);
+
+                response.setContent(usuaroActualizado);
+            }
+        } catch (Exception e) {
             e.printStackTrace();
         } finally {
             conn.close();

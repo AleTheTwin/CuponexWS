@@ -144,12 +144,6 @@ public class Empresa {
 
     public void setEstatus(String estatus) {
         this.estatus = estatus;
-    }
-
-    @Override
-    public String toString() {
-        return "Empresa{" + "id=" + id + ", representanteLegalId=" + representanteLegalId + ", representanteLegal=" + representanteLegal + ", nombre=" + nombre + ", nombreComercial=" + nombreComercial + ", correo=" + correo + ", direccion=" + direccion + ", codigoPostal=" + codigoPostal + ", ciudad=" + ciudad + ", telefono=" + telefono + ", paginaWeb=" + paginaWeb + ", rfc=" + rfc + ", estatus=" + estatus + '}';
-    }
-    
+    }   
     
 }

@@ -4,8 +4,6 @@
  */
 package pojo;
 
-import java.util.List;
-
 /**
  *
  * @author alethetwin
@@ -14,32 +12,42 @@ public class Promocion {
     private Integer id;
     private Integer categoriaId;
     private Categoria categoria;
-    private List<Restriccion> restricciones;
+    private String restriccionesString;
     private String nombre;
     private String descripcion;
     private String fechaDeInicio;
     private String fechaDeTermino;
     private String tipoDePromocion;
     private Double descuento;
-    private Double costo;
     private Boolean estatus;
+    private String foto;
 
-    public Promocion() {
-    }
-
-    public Promocion(Integer id, Integer categoriaId, Categoria categoria, List<Restriccion> restricciones, String nombre, String descripcion, String fechaDeInicio, String fechaDeTermino, String tipoDePromocion, Double descuento, Double costo, Boolean estatus) {
+    public Promocion(Integer id, Integer categoriaId, Categoria categoria,
+            String nombre, String descripcion, String fechaDeInicio, String fechaDeTermino, String tipoDePromocion,
+            Double descuento, Boolean estatus, String foto, String restriccioneString) {
         this.id = id;
         this.categoriaId = categoriaId;
         this.categoria = categoria;
-        this.restricciones = restricciones;
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.fechaDeInicio = fechaDeInicio;
         this.fechaDeTermino = fechaDeTermino;
         this.tipoDePromocion = tipoDePromocion;
         this.descuento = descuento;
-        this.costo = costo;
         this.estatus = estatus;
+        this.foto = foto;
+        this.restriccionesString = restriccioneString;
+    }
+
+    public String getFoto() {
+        return foto;
+    }
+
+    public void setFoto(String foto) {
+        this.foto = foto;
+    }
+
+    public Promocion() {
     }
 
     public Integer getId() {
@@ -64,14 +72,6 @@ public class Promocion {
 
     public void setCategoria(Categoria categoria) {
         this.categoria = categoria;
-    }
-
-    public List<Restriccion> getRestricciones() {
-        return restricciones;
-    }
-
-    public void setRestricciones(List<Restriccion> restricciones) {
-        this.restricciones = restricciones;
     }
 
     public String getNombre() {
@@ -122,14 +122,6 @@ public class Promocion {
         this.descuento = descuento;
     }
 
-    public Double getCosto() {
-        return costo;
-    }
-
-    public void setCosto(Double costo) {
-        this.costo = costo;
-    }
-
     public Boolean getEstatus() {
         return estatus;
     }
@@ -137,11 +129,13 @@ public class Promocion {
     public void setEstatus(Boolean estatus) {
         this.estatus = estatus;
     }
-
-    @Override
-    public String toString() {
-        return "Promocion{" + "id=" + id + ", categoriaId=" + categoriaId + ", categoria=" + categoria + ", restricciones=" + restricciones + ", nombre=" + nombre + ", descripcion=" + descripcion + ", fechaDeInicio=" + fechaDeInicio + ", fechaDeTermino=" + fechaDeTermino + ", tipoDePromocion=" + tipoDePromocion + ", descuento=" + descuento + ", costo=" + costo + ", estatus=" + estatus + '}';
+    
+    public String getRestriccionesString() {
+        return restriccionesString;
     }
-    
-    
+
+    public void setRestriccionesString(String restriccionesString) {
+        this.restriccionesString = restriccionesString;
+    }
+
 }

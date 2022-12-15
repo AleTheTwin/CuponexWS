@@ -24,6 +24,7 @@ import org.apache.ibatis.session.SqlSession;
 import com.google.gson.Gson;
 
 import mybatis.MyBatisUtil;
+import pojo.Empresa;
 import pojo.Response;
 import pojo.Sucursal;
 import utils.Constants;
@@ -49,23 +50,33 @@ public class SucursalWS {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public List<Sucursal> getAll(@QueryParam("encargadoId") Integer encargadoId) {
+    public List<Sucursal> getAll(@QueryParam("encargadoId") Integer encargadoId, @QueryParam("promocionId") Integer promocionId, @QueryParam("empresaId") Integer empresaId) {
         List<Sucursal> sucursales = null;
 
         SqlSession conn = MyBatisUtil.getSession();
 
         if (conn != null) {
             try {
-                if (encargadoId == null) {
-                    sucursales = conn.selectList("sucursal.readAll");
-                } else {
+                if (encargadoId != null) {
                     sucursales = conn.selectList("sucursal.readByEncargadoId", encargadoId);
+                } else if(promocionId != null) {
+                    sucursales = conn.selectList("sucursal.readByPromocionId", promocionId);
+                } else if(empresaId != null) {
+                    sucursales = conn.selectList("sucursal.readByEmpresaId", empresaId);
+                } else {
+                    sucursales = conn.selectList("sucursal.readAllActive");
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {
                 conn.close();
             }
+        }
+
+        for(int i = 0; i < sucursales.size(); i++) {
+            Sucursal sucursal = sucursales.get(i);
+            Empresa empresa = new EmpresaWS().getById(sucursal.getEmpresaId());
+            sucursal.setEmpresa(empresa);
         }
 
         return sucursales;
@@ -87,6 +98,11 @@ public class SucursalWS {
             } finally {
                 conn.close();
             }
+        }
+
+        if(sucursal != null) {
+            Empresa empresa = new EmpresaWS().getById(sucursal.getEmpresaId());
+            sucursal.setEmpresa(empresa);
         }
         
         return sucursal;

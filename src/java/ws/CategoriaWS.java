@@ -4,7 +4,18 @@
  */
 package ws;
 
+import java.util.List;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 
 import org.apache.ibatis.session.SqlSession;
@@ -13,21 +24,9 @@ import com.google.gson.Gson;
 
 import mybatis.MyBatisUtil;
 import pojo.Categoria;
+import pojo.Promocion;
 import pojo.Response;
 import utils.Constants;
-
-import javax.ws.rs.Produces;
-
-import java.util.List;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.PUT;
-import javax.ws.rs.core.MediaType;
 
 /**
  * REST Web Service
@@ -73,7 +72,7 @@ public class CategoriaWS {
         if (conn != null) {
             try {
                 categoria = conn.selectOne("categoria.readById", id);
-                
+
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {
@@ -81,6 +80,25 @@ public class CategoriaWS {
             }
         }
         return categoria;
+    }
+
+    @Path("/{id}/promocion")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<Promocion> getPromocionesPorCategoria(@PathParam("id") Integer id) {
+        List<Promocion> promociones = null;
+        SqlSession conn = MyBatisUtil.getSession();
+        if (conn != null) {
+            try {
+                promociones = conn.selectList("promocion.readByCategoriaId", id);
+            } catch (Exception e) {
+                e.printStackTrace();
+
+            } finally {
+                conn.close();
+            }
+        }
+        return promociones;
     }
 
     @POST
@@ -107,7 +125,7 @@ public class CategoriaWS {
             } else {
                 response.setError(false);
                 response.setMessage(Constants.CREATE_OK);
-                
+
                 Categoria agregada = conn.selectOne("categoria.readByNombre", categoria.getNombre());
                 response.setContent(agregada);
             }

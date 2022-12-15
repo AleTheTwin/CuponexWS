@@ -9,6 +9,7 @@ import com.google.gson.Gson;
 import mybatis.MyBatisUtil;
 import pojo.Empresa;
 import pojo.Response;
+import pojo.Usuario;
 import utils.Constants;
 
 import javax.ws.rs.core.Context;
@@ -17,6 +18,7 @@ import javax.ws.rs.core.UriInfo;
 import org.apache.ibatis.session.SqlSession;
 
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 
 import java.util.List;
 
@@ -49,17 +51,28 @@ public class EmpresaWS {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public List<Empresa> getAll() {
+    public List<Empresa> getAll(@QueryParam("representanteLegalId") Integer representanteLegalId) {
         List<Empresa> empresas = null;
         SqlSession conn = MyBatisUtil.getSession();
         if (conn != null) {
             try {
-                empresas = conn.selectList("empresa.readAll");
+                if(representanteLegalId == null) {
+                    empresas = conn.selectList("empresa.readAll");
+                } else {
+                    empresas = conn.selectList("empresa.readAllByEncargadoId", representanteLegalId);
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {
                 conn.close();
             }
+        }
+
+        // Establecer el representate legal
+        for(int i = 0; i<empresas.size(); i++) {
+            Empresa empresa = empresas.get(i);
+            Usuario usuario = new UsuarioWS().getById(empresa.getRepresentanteLegalId());
+            empresa.setRepresentanteLegal(usuario);          
         }
         return empresas;
     }
@@ -78,6 +91,10 @@ public class EmpresaWS {
             } finally {
                 conn.close();
             }
+        }
+        if(empresa != null) {
+            Usuario usuario = new UsuarioWS().getById(empresa.getRepresentanteLegalId());
+            empresa.setRepresentanteLegal(usuario); 
         }
         return empresa;
     }
@@ -107,7 +124,8 @@ public class EmpresaWS {
                 response.setError(false);
                 response.setMessage(Constants.CREATE_OK);
                 Empresa agregada = conn.selectOne("empresa.readByCorreo", empresa.getCorreo());
-
+                Usuario usuario = new UsuarioWS().getById(agregada.getRepresentanteLegalId());
+                agregada.setRepresentanteLegal(usuario); 
                 response.setContent(agregada);
             }
         } catch (Exception e) {
@@ -184,7 +202,7 @@ public class EmpresaWS {
                 response.setError(false);
                 response.setMessage(Constants.DELETE_OK);
 
-                Empresa eliminada = conn.selectOne("empresa.readById", id);
+                Empresa eliminada = new EmpresaWS().getById(id);
                 response.setContent(eliminada);
             }
         } catch (Exception e) {

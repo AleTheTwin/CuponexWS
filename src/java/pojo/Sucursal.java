@@ -23,13 +23,13 @@ public class Sucursal {
     private Double latitud;
     private Double longitud;
     private Integer encargadoId;
-    private Usuario enacrgado;
+    private Usuario encargado;
     private List<Promocion> promociones;
     private Boolean estatus;
 
     public Sucursal(Integer id, Integer empresaId, Empresa empresa, String nombre, String direccion,
             String codigoPostal, String colonia, String ciudad, String telefono, Double latitud, Double longitud,
-            Integer encargadoId, Usuario enacrgado, List<Promocion> promociones, Boolean estatus) {
+            Integer encargadoId, Usuario encargado, List<Promocion> promociones, Boolean estatus) {
         this.id = id;
         this.empresaId = empresaId;
         this.empresa = empresa;
@@ -42,7 +42,7 @@ public class Sucursal {
         this.latitud = latitud;
         this.longitud = longitud;
         this.encargadoId = encargadoId;
-        this.enacrgado = enacrgado;
+        this.encargado = encargado;
         this.promociones = promociones;
         this.estatus = estatus;
     }
@@ -154,12 +154,12 @@ public class Sucursal {
         this.encargadoId = encargadoId;
     }
 
-    public Usuario getEnacrgado() {
-        return enacrgado;
+    public Usuario getencargado() {
+        return encargado;
     }
 
-    public void setEnacrgado(Usuario enacrgado) {
-        this.enacrgado = enacrgado;
+    public void setencargado(Usuario encargado) {
+        this.encargado = encargado;
     }
 
     public List<Promocion> getPromociones() {
@@ -173,13 +173,5 @@ public class Sucursal {
     public void addPromocion(Promocion promocion) {
         this.promociones.add(promocion);
     }
-
-    @Override
-    public String toString() {
-        return "Sucursal{" + "id=" + id + ", empresaId=" + empresaId + ", empresa=" + empresa + ", nombre=" + nombre
-                + ", direccion=" + direccion + ", codigoPostal=" + codigoPostal + ", colonia=" + colonia + ", ciudad="
-                + ciudad + ", telefono=" + telefono + ", latitud=" + latitud + ", longitud=" + longitud
-                + ", encargadoId=" + encargadoId + ", enacrgado=" + enacrgado + '}';
-    }
-
+    
 }

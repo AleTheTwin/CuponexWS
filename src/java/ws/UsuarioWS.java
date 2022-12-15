@@ -4,6 +4,7 @@
  */
 package ws;
 
+import java.util.HashMap;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -50,7 +51,7 @@ public class UsuarioWS {
         SqlSession conn = MyBatisUtil.getSession();
         if (conn != null) {
             try {
-                usuarios = conn.selectList("usuario.readAll");
+                usuarios = conn.selectList("usuario.readAllActive");
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {
@@ -139,10 +140,10 @@ public class UsuarioWS {
             conn.commit();
             if (result == 0) {
                 response.setError(Boolean.TRUE);
-                response.setMessage(Constants.UPDATE_FAIL);
+                response.setMessage(Constants.CREATE_FAIL);
             } else {
                 response.setError(Boolean.FALSE);
-                response.setMessage(Constants.UPDATE_OK);
+                response.setMessage(Constants.CREATE_OK);
 
                 Usuario agregado = conn.selectOne("usuario.readByCorreo", usuario.getCorreo());
 
@@ -186,6 +187,48 @@ public class UsuarioWS {
                 Usuario eliminado = conn.selectOne("usuario.readById", id);
 
                 response.setContent(eliminado);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            conn.close();
+        }
+
+        return response;
+    }
+
+    @Path("/{id}/foto")
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response<Usuario> setFoto(@PathParam("id") Integer id, byte[] foto) {
+        Response<Usuario> response = new Response<>();
+
+        SqlSession conn = MyBatisUtil.getSession();
+        
+        HashMap<String, Object> parametros = new HashMap<>();
+        
+        parametros.put("id", id);
+        parametros.put("foto", foto);
+
+        if (conn == null) {
+            response.setError(true);
+            response.setMessage(Constants.ERROR_DE_CONEXION_DB);
+            return response;
+        }
+
+        try {
+            int result = conn.update("usuario.setFoto", parametros);
+            conn.commit();
+            if (result == 0) {
+                response.setError(Boolean.TRUE);
+                response.setMessage("No se pudo establecer la foto");
+            } else {
+                response.setError(Boolean.FALSE);
+                response.setMessage("Foto establecida con éxito");
+
+                Usuario usuaroActualizado = conn.selectOne("usuario.readById", id);
+
+                response.setContent(usuaroActualizado);
             }
         } catch (Exception e) {
             e.printStackTrace();

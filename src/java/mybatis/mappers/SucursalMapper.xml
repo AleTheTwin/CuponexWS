@@ -6,69 +6,48 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 <mapper namespace="sucursal">
 
     <select id="readAll" resultType="pojo.Sucursal">
-        SELECT
-            *
-        FROM
-            Sucursal
+        SELECT * FROM Sucursal
+    </select>
+
+    <select id="readAllActive" resultType="pojo.Sucursal">
+        SELECT * FROM Sucursal WHERE estatus = true
     </select>
 
     <select id="readByEncargadoId" parameterType="int" resultType="pojo.Sucursal">
-        SELECT
-            *
-        FROM
-            Sucursal
-        WHERE encargadoId = #{encargadoId}
+        SELECT * FROM Sucursal WHERE encargadoId = #{encargadoId} WHERE estatus = true
+    </select>
+
+    <select id="readByEmpresaId" parameterType="int" resultType="pojo.Sucursal">
+        SELECT * FROM Sucursal WHERE empresaId = #{empresaId} AND estatus = true
+    </select>
+
+    <select id="readByPromocionId" parameterType="int" resultType="pojo.Sucursal">
+        SELECT * FROM Sucursal INNER JOIN tiene_promocion ON sucursalId = id
+        WHERE promocionId = #{promocionId} AND WHERE estatus = true
     </select>
 
     <select id="readById" parameterType="int" resultType="pojo.Sucursal">
-        SELECT
-            *
-        FROM
-            Sucursal
+        SELECT * FROM Sucursal
         WHERE id = #{id}
     </select>
 
     <select id="readByNombre" parameterType="String" resultType="pojo.Sucursal">
-        SELECT
-            *
-        FROM
-            Sucursal
+        SELECT * FROM Sucursal
         WHERE nombre = #{nombre}
     </select>
     
     <insert id="create" parameterType="pojo.Sucursal" >
-        INSERT INTO Sucursal (nombre, direccion, codigoPostal, colonia, ciudad, telefono, latitud, longitud, empresaId, encargadoId) VALUES (
-        #{nombre},
-        #{direccion},
-        #{codigoPostal},
-        #{colonia},
-        #{ciudad},
-        #{telefono},
-        #{latitud},
-        #{longitud},
-        #{empresaId},
-        #{encargadoId}
-        )
+        INSERT INTO Sucursal (nombre, direccion, codigoPostal, colonia, ciudad, telefono, latitud, longitud, empresaId, encargadoId) 
+        VALUES ( #{nombre}, #{direccion}, #{codigoPostal}, #{colonia}, #{ciudad}, #{telefono}, #{latitud}, #{longitud}, #{empresaId}, #{encargadoId} )
     </insert>
     
     <update id="update" parameterType="pojo.Sucursal" >
-        UPDATE Sucursal SET 
-            nombre = #{nombre},
-            direccion = #{direccion},
-            codigoPostal = #{codigoPostal},
-            colonia = #{colonia},
-            ciudad = #{ciudad},
-            telefono = #{telefono},
-            latitud = #{latitud},
-            longitud = #{longitud},
-            empresaId = #{empresaId},
-            encargadoId = #{encargadoId}
+        UPDATE Sucursal SET  nombre = #{nombre}, direccion = #{direccion}, codigoPostal = #{codigoPostal}, colonia = #{colonia}, ciudad = #{ciudad}, telefono = #{telefono}, latitud = #{latitud}, longitud = #{longitud}, empresaId = #{empresaId}, encargadoId = #{encargadoId}
         WHERE id = #{id}   
     </update>
     
     <update id="delete" parameterType="int" >
-        UPDATE Sucursal SET 
-            estatus = false
+        UPDATE Sucursal SET  estatus = false
         WHERE id = #{id}   
     </update>
 
