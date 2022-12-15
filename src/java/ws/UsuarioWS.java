@@ -4,7 +4,6 @@
  */
 package ws;
 
-import java.util.HashMap;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -196,46 +195,5 @@ public class UsuarioWS {
 
         return response;
     }
-
-    @Path("/{id}/foto")
-    @POST
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response<Usuario> setFoto(@PathParam("id") Integer id, byte[] foto) {
-        Response<Usuario> response = new Response<>();
-
-        SqlSession conn = MyBatisUtil.getSession();
-        
-        HashMap<String, Object> parametros = new HashMap<>();
-        
-        parametros.put("id", id);
-        parametros.put("foto", foto);
-
-        if (conn == null) {
-            response.setError(true);
-            response.setMessage(Constants.ERROR_DE_CONEXION_DB);
-            return response;
-        }
-
-        try {
-            int result = conn.update("usuario.setFoto", parametros);
-            conn.commit();
-            if (result == 0) {
-                response.setError(Boolean.TRUE);
-                response.setMessage("No se pudo establecer la foto");
-            } else {
-                response.setError(Boolean.FALSE);
-                response.setMessage("Foto establecida con éxito");
-
-                Usuario usuaroActualizado = conn.selectOne("usuario.readById", id);
-
-                response.setContent(usuaroActualizado);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            conn.close();
-        }
-
-        return response;
-    }
+    
 }

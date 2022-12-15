@@ -6,7 +6,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 <mapper namespace="usuario">
 
     <select id="readAll" resultType="pojo.Usuario">
-        SELECT id, correo, nombre, apellidoMaterno, apellidoPaterno, telefono, direccion, fechaDeNacimiento, password, administracion, TO_BASE64(foto) as foto
+        SELECT id, correo, nombre, apellidoMaterno, apellidoPaterno, telefono, direccion, fechaDeNacimiento, password, administracion
         FROM Usuario
     </select>
 
@@ -49,11 +49,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     
     <update id="delete" parameterType="int" >
         UPDATE Usuario SET  estatus = false
-        WHERE id = #{id}   
-    </update>
-    
-    <update id="setFoto" parameterType="map" >
-        UPDATE Usuario SET  foto = #{foto}
         WHERE id = #{id}   
     </update>
 
